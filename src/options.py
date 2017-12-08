@@ -83,7 +83,7 @@ define("max_file_size",
 # Local storage
 
 define("data_runtime_location",
-       default="/opt/anthill/static-runtime",
+       default="/usr/local/anthill/static-runtime",
        help="DLC content runtime folder",
        group="static",
        type=str)
