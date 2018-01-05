@@ -67,10 +67,10 @@ define("rate_cache_max_connections",
        type=int)
 
 define("rate_file_upload",
-       default=(10, 600),
+       default="10,600",
        help="A limit for file upload for user tuple: (amount, time)",
        group="ratelimit",
-       type=tuple)
+       type=str)
 
 # Static
 
