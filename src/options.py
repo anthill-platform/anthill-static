@@ -89,7 +89,7 @@ define("data_runtime_location",
        type=str)
 
 define("data_host_location",
-       default="http://static-dev.anthill/download/",
+       default="http://127.0.0.1:9515/download/",
        help="DLC content prefix URL",
        group="static",
        type=str)

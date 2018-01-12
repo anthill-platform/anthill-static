@@ -1,5 +1,6 @@
 
 from tornado.gen import coroutine
+from tornado.web import StaticFileHandler
 from common.options import options
 
 import common.server
@@ -51,9 +52,17 @@ class StaticServer(common.server.Server):
         }
 
     def get_handlers(self):
-        return [
-            (r"/upload", handler.UploadFileHandler),
+
+        h = [
+            (r"/upload", handler.UploadFileHandler)
         ]
+
+        if options.serve_static:
+            # noinspection PyTypeChecker
+            h.append((r'/download/(.*)', StaticFileHandler, {'path': options.data_runtime_location}))
+
+        return h
+
 
 if __name__ == "__main__":
     stt = common.server.init()
