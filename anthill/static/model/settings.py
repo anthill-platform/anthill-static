@@ -1,9 +1,7 @@
 
-from tornado.gen import coroutine, Return
-
-from common.model import Model
-from common.database import DatabaseError
-from common.validate import validate
+from anthill.common.model import Model
+from anthill.common.database import DatabaseError
+from anthill.common.validate import validate
 
 import ujson
 
@@ -37,11 +35,10 @@ class SettingsModel(Model):
     def get_setup_tables(self):
         return ["settings"]
 
-    @coroutine
     @validate(gamespace_id="int")
-    def delete_settings(self, gamespace_id):
+    async def delete_settings(self, gamespace_id):
         try:
-            yield self.db.execute(
+            await self.db.execute(
                 """
                 DELETE FROM `settings`
                 WHERE `gamespace_id`=%s;
@@ -49,11 +46,10 @@ class SettingsModel(Model):
         except DatabaseError as e:
             raise SettingsError("Failed to delete settings: " + e.args[1])
 
-    @coroutine
     @validate(gamespace_id="int")
-    def get_settings(self, gamespace_id):
+    async def get_settings(self, gamespace_id):
         try:
-            settings = yield self.db.get(
+            settings = await self.db.get(
                 """
                 SELECT *
                 FROM `settings`
@@ -66,16 +62,15 @@ class SettingsModel(Model):
         if not settings:
             raise NoSuchSettingsError()
 
-        raise Return(SettingsAdapter(settings))
+        return SettingsAdapter(settings)
 
-    @coroutine
     @validate(gamespace_id="int", deployment_method="str_name", deployment_data="json_dict")
-    def update_settings(self, gamespace_id, deployment_method, deployment_data):
+    async def update_settings(self, gamespace_id, deployment_method, deployment_data):
 
         deployment_data = ujson.dumps(deployment_data)
 
         try:
-            yield self.db.insert(
+            await self.db.insert(
                 """
                 INSERT INTO `settings`
                 (`deployment_method`, `deployment_data`, `gamespace_id`)

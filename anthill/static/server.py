@@ -1,28 +1,22 @@
 
-from tornado.gen import coroutine
 from tornado.web import StaticFileHandler
-from common.options import options
+from anthill.common.options import options
 
-import common.server
-import common.handler
-import common.database
-import common.access
-import common.sign
-import common.ratelimit
+from anthill.common import server, handler, database, access, ratelimit
 
-from model.deploy import DeploymentModel
-from model.settings import SettingsModel
+from . model.deploy import DeploymentModel
+from . model.settings import SettingsModel
 
-import handler
-import admin
-import options as _opts
+from . import handler
+from . import admin
+from . import options as _opts
 
 
-class StaticServer(common.server.Server):
+class StaticServer(server.Server):
     def __init__(self):
         super(StaticServer, self).__init__()
 
-        self.db = common.database.Database(
+        self.db = database.Database(
             host=options.db_host,
             database=options.db_name,
             user=options.db_username,
@@ -31,7 +25,7 @@ class StaticServer(common.server.Server):
         self.deployment_settings = SettingsModel(self.db)
         self.deployment = DeploymentModel(self.deployment_settings)
 
-        self.ratelimit = common.ratelimit.RateLimit({
+        self.ratelimit = ratelimit.RateLimit({
             "file_upload": options.rate_file_upload
         })
 
@@ -65,6 +59,6 @@ class StaticServer(common.server.Server):
 
 
 if __name__ == "__main__":
-    stt = common.server.init()
-    common.access.AccessToken.init([common.access.public()])
-    common.server.start(StaticServer)
+    stt = server.init()
+    access.AccessToken.init([access.public()])
+    server.start(StaticServer)

@@ -1,10 +1,8 @@
 
-from tornado.gen import coroutine, Return
+import anthill.common.admin as a
 
-import common.admin as a
-
-from model.deploy import DeploymentMethods, DeploymentModel
-from model.settings import SettingsError, NoSuchSettingsError
+from . model.deploy import DeploymentMethods, DeploymentModel
+from . model.settings import SettingsError, NoSuchSettingsError
 
 
 class RootAdminController(a.AdminController):
@@ -21,11 +19,10 @@ class RootAdminController(a.AdminController):
 
 
 class SettingsController(a.AdminController):
-    @coroutine
-    def get(self):
+    async def get(self):
 
         try:
-            settings = yield self.application.deployment_settings.get_settings(self.gamespace)
+            settings = await self.application.deployment_settings.get_settings(self.gamespace)
         except NoSuchSettingsError:
             deployment_method = ""
             deployment_data = {}
@@ -46,34 +43,32 @@ class SettingsController(a.AdminController):
             "deployment_data": deployment_data
         }
 
-        raise Return(result)
+        return result
 
-    @coroutine
-    def update_deployment_method(self, deployment_method):
+    async def update_deployment_method(self, deployment_method):
 
         if not DeploymentMethods.valid(deployment_method):
             raise a.ActionError("Not a valid deployment method")
 
         try:
-            stt = yield self.application.deployment_settings.get_settings(self.gamespace)
+            stt = await self.application.deployment_settings.get_settings(self.gamespace)
         except NoSuchSettingsError:
             deployment_data = {}
         else:
             deployment_data = stt.deployment_data
 
         try:
-            yield self.application.deployment_settings.update_settings(
+            await self.application.deployment_settings.update_settings(
                 self.gamespace, deployment_method, deployment_data)
         except SettingsError as e:
             raise a.ActionError(e.message)
 
         raise a.Redirect("settings", message="Deployment method has been updated")
 
-    @coroutine
-    def update_deployment(self, **kwargs):
+    async def update_deployment(self, **kwargs):
 
         try:
-            settings = yield self.application.deployment_settings.get_settings(self.gamespace)
+            settings = await self.application.deployment_settings.get_settings(self.gamespace)
         except NoSuchSettingsError:
             raise a.ActionError("Please select deployment method first")
         except SettingsError as e:
@@ -85,10 +80,10 @@ class SettingsController(a.AdminController):
         m = DeploymentMethods.get(deployment_method)()
 
         m.load(deployment_data)
-        yield m.update(**kwargs)
+        await m.update(**kwargs)
 
         try:
-            yield self.application.deployment_settings.update_settings(
+            await self.application.deployment_settings.update_settings(
                 self.gamespace, deployment_method, m.dump())
         except SettingsError as e:
             raise a.ActionError(e.message)
