@@ -2,12 +2,13 @@
 from setuptools import setup, find_packages
 
 DEPENDENCIES = [
-    "anthill-common>=0.1.0"
+    "anthill-common"
 ]
 
 setup(
     name='anthill-static',
-    version='0.1.0',
+    setup_requires=["pypigit-version"],
+    git_version="0.1.0",
     description='Simple static files hosting service (for players to upload)',
     author='desertkun',
     license='MIT',
