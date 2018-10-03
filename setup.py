@@ -7,6 +7,9 @@ DEPENDENCIES = [
 
 setup(
     name='anthill-static',
+    package_data={
+      "anthill.static": ["anthill/static/sql", "anthill/static/static"]
+    },
     setup_requires=["pypigit-version"],
     git_version="0.1.0",
     description='Simple static files hosting service (for players to upload)',
