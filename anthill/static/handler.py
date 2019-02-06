@@ -58,7 +58,7 @@ class UploadFileHandler(AuthenticatedHandler):
 
         try:
             self.tmp_descriptor, self.tmp_name = tempfile.mkstemp()
-            self.file = open(self.tmp_name, 'w')
+            self.file = open(self.tmp_name, 'wb')
         except Exception as e:
             raise HTTPError(500, str(e))
 
