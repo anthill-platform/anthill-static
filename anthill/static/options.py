@@ -78,7 +78,7 @@ define("max_file_size",
        default=104857600,
        help="Maximum file size to upload",
        group="static",
-       type=str)
+       type=int)
 
 # Local storage
 
